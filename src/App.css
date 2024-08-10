@@ -1,0 +1,11 @@
+body {
+  margin: 0;
+}
+
+.main {
+  padding: 1rem;
+}
+
+.main__title {
+  margin-top: 0; 
+}
