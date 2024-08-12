@@ -6,34 +6,42 @@ String.prototype.replaceBetween = function(start, end, what) {
   return this.substring(0, start) + what + this.substring(end);
 };
 
-function GemsMenu(props) {
-  const { save, setSave } = useContext(SaveContext);
-  const [gems, setGems] = useState([]);
-  let gemElements = [];
+function DropDown(props) {
+  const [open, setOpen] = useState(false)
 
-  useEffect(() => {
-    setGems(processGems(save));
-  }, [save]);
+  function handleToggle() {
+    setOpen(!open)
+  }
+
+  return (
+      <div className={"dropdown" + (!open ? " dropdown-collapsed": '')}>
+        <p className="dropdown-button" onClick={handleToggle}>{props.label}</p>
+        <div className="dropdown-content">
+          {props.content}
+        </div>
+      </div>
+    )
+}
+
+function GemsMenu(props) {
+  const {save, setSave} = useContext(SaveContext);
+  const [gems, setGems] = useState([]);
+  const [hold, setHold] = useState(true)
+  const [activeGem, setActiveGem] = useState(false);
+  let gemElements = [];
 
   for (var i = 0; i < gems.length; i++) {
     gemElements.push(<GemListItem key={i} gem={gems[i]} />);
   }
 
-  return (
-    <div>
-      {gems.length > 0 && (
-        <div>
-          <ActiveGemModal gem={gems[0]} />
-          {gemElements}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ActiveGemModal(props) {
-  const [activeGem, setActiveGem] = useState(props.gem);
-  const { save, setSave } = useContext(SaveContext);
+  useEffect(() => {
+    setGems(processGems(save));
+    if (!hold) {
+      setActiveGem(false)
+    } else {
+      setHold(false)
+    }
+  }, [save]);
 
   useEffect(() => {
     updateGem()
@@ -44,7 +52,83 @@ function ActiveGemModal(props) {
     setSave(temp)
   }
 
-  function DropDownItem(props) {
+  function GemEditItem(props) {
+    let shapes = [];
+    for (const [key, value] of Object.entries(gemData.gem_shapes)) {
+      shapes.push(
+        <ValueItem key={key} id={key} value={value} onClick={selectShape} />
+      );
+    }
+
+   const effectRegex = /\((\+|\-)([0-9.]*)[\%]?\)/g
+
+   function effectSort(a, b) {
+    var parts = {
+      a: a.props.value.split('('),
+      b: b.props.value.split('('),
+    }
+
+    if (parts.a[0] == parts.b[0] && parts.a[1] && parts.b[1]) {
+      let vala = parts.a[1].replace('+', '').replace('-', '').replace('%', '').replace(')', '')
+      let valb = parts.b[1].replace('+', '').replace('-', '').replace('%', '').replace(')', '')
+      return parseFloat(vala) - parseFloat(valb)
+    } else {
+      return parts.a[0] > parts.b[0] ? 1: -1
+    }
+   }
+
+    let effects1 = [];
+    for (const [key, value] of Object.entries(gemData.gem_effects)) {
+      effects1.push(
+        <ValueItem key={key} id={key} value={value} onClick={selectEffect1} />
+      );
+    }
+    effects1.sort(effectSort)
+
+    let effects2 = [];
+    for (const [key, value] of Object.entries(gemData.gem_effects)) {
+      effects2.push(
+        <ValueItem key={key} id={key} value={value} onClick={selectEffect2} />
+      );
+    }
+    effects2.sort(effectSort)
+
+    let effects3 = [];
+    for (const [key, value] of Object.entries(gemData.gem_effects)) {
+      effects3.push(
+        <ValueItem key={key} id={key} value={value} onClick={selectEffect3} />
+      );
+    }
+    effects3.sort(effectSort)
+
+    return (
+      <div className="gems-active">
+        {activeGem && (
+          <div>
+            <p>{activeGem.type}</p>
+            <DropDown label={activeGem.shape} content={shapes} />
+            <DropDown label={activeGem.effect1} content={effects1} />
+            <DropDown label={activeGem.effect2} content={effects2} />
+            <DropDown label={activeGem.effect3} content={effects3} />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function GemListItem(props) {
+    return (
+      <div className={"gems-list-item" + (props.gem == activeGem ? ' active' : '')} onClick={() => {selectGem(props.gem)}}>
+        <p>{props.gem.type}</p>
+        <p>{props.gem.shape}</p>
+        <p>{props.gem.effect1}</p>
+        <p>{props.gem.effect2}</p>
+        <p>{props.gem.effect3}</p>
+      </div>
+    );
+  }
+
+  function ValueItem(props) {
     return (
       <div onClick={props.onClick} data-id={props.id}>
         {props.value}
@@ -53,60 +137,51 @@ function ActiveGemModal(props) {
   }
 
   function selectShape(e) {
-    // console.log(activeGem.code)
-    console.log(activeGem)
     let code = activeGem.code.replaceBetween(8,16,e.target.getAttribute("data-id"))
+    setHold(true)
     setActiveGem({ ...activeGem, shape: gemData.gem_shapes[e.target.getAttribute("data-id")], code: code });
   }
 
-  function GemEditItem(props) {
-    let shapes = [];
-    for (const [key, value] of Object.entries(gemData.gem_shapes)) {
-      shapes.push(
-        <DropDownItem key={key} id={key} value={value} onClick={selectShape} />
-      );
-    }
+  function selectEffect1(e) {
+    let code = activeGem.code.replaceBetween(16,24,e.target.getAttribute("data-id"))
+    setHold(true)
+    setActiveGem({ ...activeGem, effect1: gemData.gem_effects[e.target.getAttribute("data-id")], code: code });
+  }
 
-    return (
-      <div>
-        <p>{activeGem.type}</p>
-        <div className="dropdown dropdown-collapsed">
-          <p>{activeGem.shape}</p>
-          {shapes}
-        </div>
-        <p>{activeGem.effect1}</p>
-        <p>{activeGem.effect2}</p>
-        <p>{activeGem.effect3}</p>
-      </div>
-    );
+  function selectEffect2(e) {
+    let code = activeGem.code.replaceBetween(24,32,e.target.getAttribute("data-id"))
+    setHold(true)
+    setActiveGem({ ...activeGem, effect2: gemData.gem_effects[e.target.getAttribute("data-id")], code: code });
+  }
+
+  function selectEffect3(e) {
+    let code = activeGem.code.replaceBetween(32,40,e.target.getAttribute("data-id"))
+    setHold(true)
+    setActiveGem({ ...activeGem, effect3: gemData.gem_effects[e.target.getAttribute("data-id")], code: code });
+  }
+
+  function selectGem(gem) {
+    setActiveGem(gem)
   }
 
   return (
-    <div className="gem-modal">
-      <GemEditItem gem={props.gem} />
-    </div>
-  );
-}
-
-function GemListItem(props) {
-  return (
     <div>
-      <p>{props.gem.type}</p>
-      <p>{props.gem.shape}</p>
-      <p>{props.gem.effect1}</p>
-      <p>{props.gem.effect2}</p>
-      <p>{props.gem.effect3}</p>
+      {gems.length > 0 && (
+        <div className="gems">
+          <GemEditItem gem={activeGem} />
+          <div className="gems-list">
+          {gemElements}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 function processGems(save) {
-  console.log(save)
   if (!save.startsWith("41000000000000")) {
-    console.log('here')
     return false;
   } else {
-    console.log('here1')
     return extractGems(save);
   }
 }
@@ -123,7 +198,7 @@ function extractGems(save) {
   while ((result = regex.exec(save))) {
     indices.push(result.index);
   }
-  // console.log(indices)
+
   let gemStartIndex = Math.min(...indices);
   const gemSize = 80;
   let gemNumber = 1;
@@ -132,7 +207,6 @@ function extractGems(save) {
       gemStartIndex + gemSize * (gemNumber - 1),
       gemStartIndex + gemSize * gemNumber
     );
-    // console.log(gemItemData)
     if (gemItemData.match(regex)) {
       allGems.push(
         formatGemData(gemItemData, gemStartIndex + gemSize * (gemNumber - 1))
@@ -142,15 +216,13 @@ function extractGems(save) {
       loop = false;
     }
   }
-  // console.log(allGems)
+
   return allGems; 
 }
 
 function formatGemData(gem, index) {
-  // gem = gem.toUpperCase();
   let type = gemData.types[gem.substring(0, 8)];
-  // console.log(gem)
-  console.log(gem.substring(16, 24))
+
   let shape, effect1, effect2, effect3;
   if (type == "gem") {
     shape = gemData.gem_shapes[gem.substring(8, 16)];

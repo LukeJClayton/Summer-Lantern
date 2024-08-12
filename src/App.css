@@ -9,3 +9,33 @@ body {
 .main__title {
   margin-top: 0; 
 }
+
+.gems {
+  display: flex;
+}
+
+.gems-active {
+  width: 50%;
+}
+
+.gems-list {
+  width: 50%;
+}
+
+.gems-list-item {
+  padding: 5px;
+  border: 1px solid black;
+}
+
+.gems-list-item:hover {
+  background: lightgrey;
+}
+
+.gems-list-item.active {
+  background: darkgrey;
+  color: white;
+}
+
+.dropdown-collapsed .dropdown-content {
+  display: none;
+}
