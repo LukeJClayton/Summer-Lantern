@@ -1,5 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { SaveContext } from "../context/Save.js";
+import { SearchableDropdown } from "./SearchableDropdown.js";
 import gemData from "../data/gems.json";
 
 String.prototype.replaceBetween = function(start, end, what) {
@@ -28,10 +29,13 @@ function GemsMenu(props) {
   const [gems, setGems] = useState([]);
   const [hold, setHold] = useState(true)
   const [activeGem, setActiveGem] = useState(false);
+  const [sortedEffects, setSortedEffects] = useState([])
   let gemElements = [];
 
   for (var i = 0; i < gems.length; i++) {
-    gemElements.push(<GemListItem key={i} gem={gems[i]} />);
+    if (gems[i].type == "gem") {
+      gemElements.push(<GemListItem key={i} gem={gems[i]} />);
+    }
   }
 
   useEffect(() => {
@@ -55,8 +59,10 @@ function GemsMenu(props) {
   function GemEditItem(props) {
     let shapes = [];
     for (const [key, value] of Object.entries(gemData.gem_shapes)) {
-      shapes.push(
-        <ValueItem key={key} id={key} value={value} onClick={selectShape} />
+      shapes.push({
+        key: key,
+        value: value
+      }
       );
     }
 
@@ -64,8 +70,8 @@ function GemsMenu(props) {
 
    function effectSort(a, b) {
     var parts = {
-      a: a.props.value.split('('),
-      b: b.props.value.split('('),
+      a: a.value.split('('),
+      b: b.value.split('('),
     }
 
     if (parts.a[0] == parts.b[0] && parts.a[1] && parts.b[1]) {
@@ -77,39 +83,48 @@ function GemsMenu(props) {
     }
    }
 
-    let effects1 = [];
-    for (const [key, value] of Object.entries(gemData.gem_effects)) {
-      effects1.push(
-        <ValueItem key={key} id={key} value={value} onClick={selectEffect1} />
-      );
-    }
-    effects1.sort(effectSort)
-
-    let effects2 = [];
-    for (const [key, value] of Object.entries(gemData.gem_effects)) {
-      effects2.push(
-        <ValueItem key={key} id={key} value={value} onClick={selectEffect2} />
-      );
-    }
-    effects2.sort(effectSort)
-
-    let effects3 = [];
-    for (const [key, value] of Object.entries(gemData.gem_effects)) {
-      effects3.push(
-        <ValueItem key={key} id={key} value={value} onClick={selectEffect3} />
-      );
-    }
-    effects3.sort(effectSort)
+   if (!sortedEffects.length) {
+      let tempArray = []
+      for (const [key, value] of Object.entries(gemData.gem_effects)) {
+        tempArray.push({key: key, value: value})
+      }
+      tempArray.sort(effectSort)
+      setSortedEffects(tempArray)
+   }
 
     return (
       <div className="gems-active">
         {activeGem && (
           <div>
             <p>{activeGem.type}</p>
-            <DropDown label={activeGem.shape} content={shapes} />
-            <DropDown label={activeGem.effect1} content={effects1} />
-            <DropDown label={activeGem.effect2} content={effects2} />
-            <DropDown label={activeGem.effect3} content={effects3} />
+            <SearchableDropdown
+              options={shapes}
+              label="value"
+              id="key"
+              selectedVal={activeGem.shape}
+              handleChange={(val) => dropdownSelectShape(val)}
+            />
+            <SearchableDropdown
+              options={sortedEffects}
+              label="value"
+              id="key"
+              selectedVal={activeGem.effect1}
+              handleChange={(val) => dropdownSelectEffect1(val)}
+            />
+            <SearchableDropdown
+              options={sortedEffects}
+              label="value"
+              id="key"
+              selectedVal={activeGem.effect2}
+              handleChange={(val) => dropdownSelectEffect2(val)}
+            />
+            <SearchableDropdown
+              options={sortedEffects}
+              label="value"
+              id="key"
+              selectedVal={activeGem.effect3}
+              handleChange={(val) => dropdownSelectEffect3(val)}
+            />
           </div>
         )}
       </div>
@@ -136,28 +151,39 @@ function GemsMenu(props) {
     );
   }
 
-  function selectShape(e) {
-    let code = activeGem.code.replaceBetween(8,16,e.target.getAttribute("data-id"))
-    setHold(true)
-    setActiveGem({ ...activeGem, shape: gemData.gem_shapes[e.target.getAttribute("data-id")], code: code });
+  function dropdownSelectShape(val) {
+    if (val && val.key) {
+      let code = activeGem.code.replaceBetween(8,16,val.key)
+      setHold(true)
+      setActiveGem({ ...activeGem, shape: gemData.gem_shapes[val.key], code: code });
+    }
   }
 
-  function selectEffect1(e) {
-    let code = activeGem.code.replaceBetween(16,24,e.target.getAttribute("data-id"))
-    setHold(true)
-    setActiveGem({ ...activeGem, effect1: gemData.gem_effects[e.target.getAttribute("data-id")], code: code });
+  function dropdownSelectEffect1(val) {
+    console.log(val)
+    if (val && val.key) {
+      let code = activeGem.code.replaceBetween(16,24,val.key)
+      setHold(true)
+      setActiveGem({ ...activeGem, effect1: gemData.gem_effects[val.key], code: code });
+    }
   }
 
-  function selectEffect2(e) {
-    let code = activeGem.code.replaceBetween(24,32,e.target.getAttribute("data-id"))
-    setHold(true)
-    setActiveGem({ ...activeGem, effect2: gemData.gem_effects[e.target.getAttribute("data-id")], code: code });
+  function dropdownSelectEffect2(val) {
+    console.log(val)
+    if (val && val.key) {
+      let code = activeGem.code.replaceBetween(24,32,val.key)
+      setHold(true)
+      setActiveGem({ ...activeGem, effect1: gemData.gem_effects[val.key], code: code });
+    }
   }
 
-  function selectEffect3(e) {
-    let code = activeGem.code.replaceBetween(32,40,e.target.getAttribute("data-id"))
-    setHold(true)
-    setActiveGem({ ...activeGem, effect3: gemData.gem_effects[e.target.getAttribute("data-id")], code: code });
+  function dropdownSelectEffect3(val) {
+    console.log(val)
+    if (val && val.key) {
+      let code = activeGem.code.replaceBetween(32,40,val.key)
+      setHold(true)
+      setActiveGem({ ...activeGem, effect1: gemData.gem_effects[val.key], code: code });
+    }
   }
 
   function selectGem(gem) {
