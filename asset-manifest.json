@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Summer-Lantern/static/css/main.b05ef5f3.css",
+    "main.js": "/Summer-Lantern/static/js/main.9d35ed1e.js",
+    "index.html": "/Summer-Lantern/index.html",
+    "main.b05ef5f3.css.map": "/Summer-Lantern/static/css/main.b05ef5f3.css.map",
+    "main.9d35ed1e.js.map": "/Summer-Lantern/static/js/main.9d35ed1e.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b05ef5f3.css",
+    "static/js/main.9d35ed1e.js"
+  ]
+}
