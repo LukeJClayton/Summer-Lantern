@@ -133,7 +133,7 @@ function GemsMenu(props) {
 
   function GemListItem(props) {
     return (
-      <div className={"gems-list-item" + (props.gem == activeGem ? ' active' : '')} onClick={() => {selectGem(props.gem)}}>
+      <div className={"gems-list-item" + (props.gem.index == activeGem.index ? ' active' : '')} onClick={() => {selectGem(props.gem)}}>
         <p>{props.gem.type}</p>
         <p>{props.gem.shape}</p>
         <p>{props.gem.effect1}</p>
@@ -160,7 +160,6 @@ function GemsMenu(props) {
   }
 
   function dropdownSelectEffect1(val) {
-    console.log(val)
     if (val && val.key) {
       let code = activeGem.code.replaceBetween(16,24,val.key)
       setHold(true)
@@ -169,20 +168,18 @@ function GemsMenu(props) {
   }
 
   function dropdownSelectEffect2(val) {
-    console.log(val)
     if (val && val.key) {
       let code = activeGem.code.replaceBetween(24,32,val.key)
       setHold(true)
-      setActiveGem({ ...activeGem, effect1: gemData.gem_effects[val.key], code: code });
+      setActiveGem({ ...activeGem, effect2: gemData.gem_effects[val.key], code: code });
     }
   }
 
   function dropdownSelectEffect3(val) {
-    console.log(val)
     if (val && val.key) {
       let code = activeGem.code.replaceBetween(32,40,val.key)
       setHold(true)
-      setActiveGem({ ...activeGem, effect1: gemData.gem_effects[val.key], code: code });
+      setActiveGem({ ...activeGem, effect3: gemData.gem_effects[val.key], code: code });
     }
   }
 
@@ -205,7 +202,7 @@ function GemsMenu(props) {
 }
 
 function processGems(save) {
-  if (!save.startsWith("41000000000000")) {
+  if (!save.startsWith("410000000000")) {
     return false;
   } else {
     return extractGems(save);
