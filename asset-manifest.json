@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/Summer-Lantern/static/css/main.f2d26fa1.css",
-    "main.js": "/Summer-Lantern/static/js/main.02446756.js",
+    "main.js": "/Summer-Lantern/static/js/main.6b06dcf2.js",
     "index.html": "/Summer-Lantern/index.html",
     "main.f2d26fa1.css.map": "/Summer-Lantern/static/css/main.f2d26fa1.css.map",
-    "main.02446756.js.map": "/Summer-Lantern/static/js/main.02446756.js.map"
+    "main.6b06dcf2.js.map": "/Summer-Lantern/static/js/main.6b06dcf2.js.map"
   },
   "entrypoints": [
     "static/css/main.f2d26fa1.css",
-    "static/js/main.02446756.js"
+    "static/js/main.6b06dcf2.js"
   ]
 }
