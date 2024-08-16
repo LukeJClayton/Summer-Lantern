@@ -34,17 +34,18 @@ function GemsMenu(props) {
   let gemElements = [];
 
   for (var i = 0; i < gems.length; i++) {
-    // if (gems[i].type == "gem") {
-      gemElements.push(<GemListItem key={i} gem={gems[i]} />);
-    // }
+    gemElements.push(<GemListItem key={i} gem={gems[i]} />);
   }
-
+  let loaded = false;
   useEffect(() => {
-    setGems(processGems(save));
-    if (!hold) {
-      setActiveGem(false)
-    } else {
-      setHold(false)
+    if (!loaded) {
+      loaded = true
+      setGems(processGems(save));
+      if (!hold) {
+        setActiveGem(false)
+      } else {
+        setHold(false)
+      }
     }
   }, [save]);
 
@@ -99,7 +100,7 @@ function GemsMenu(props) {
     }
    }
 
-   if (!sortedEffects.length) {
+   if (!sortedEffects.length && activeGem) {
       let tempArray = []
       for (const [key, value] of Object.entries(gemData.gem_effects)) {
         tempArray.push({key: key, value: value})
@@ -108,7 +109,7 @@ function GemsMenu(props) {
       setSortedEffects(tempArray)
    }
 
-   if (!sortedRuneEffects.length) {
+   if (!sortedRuneEffects.length && activeGem) {
       let tempArray = []
       for (const [key, value] of Object.entries(gemData.rune_effects)) {
         tempArray.push({key: key, value: value})
@@ -121,7 +122,6 @@ function GemsMenu(props) {
       <div className="gems-active">
         {activeGem && (
           <div>
-            {/*<p>{activeGem.type}</p>*/}
             <SearchableDropdown
               options={types}
               label="value"
@@ -209,7 +209,7 @@ function GemsMenu(props) {
     if (val && val.key) {
       let code = activeGem.code.replaceBetween(8,16,val.key)
       setHold(true)
-      setActiveGem({ ...activeGem, shape: gemData.gem_shapes[val.key], code: code });
+      setActiveGem({ ...activeGem, shape: gemData[activeGem.type == 'rune' ? 'rune_shapes' : 'gem_shapes'][val.key], code: code });
     }
   }
 
