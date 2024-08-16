@@ -217,7 +217,7 @@ function GemsMenu(props) {
     if (val && val.key) {
       let code = activeGem.code.replaceBetween(16,24,val.key)
       setHold(true)
-      setActiveGem({ ...activeGem, effect1: gemData.gem_effects[val.key], code: code });
+      setActiveGem({ ...activeGem, effect1: gemData[activeGem.type == 'rune' ? 'rune_effects' : 'gem_effects'][val.key], code: code });
     }
   }
 
@@ -225,7 +225,7 @@ function GemsMenu(props) {
     if (val && val.key) {
       let code = activeGem.code.replaceBetween(24,32,val.key)
       setHold(true)
-      setActiveGem({ ...activeGem, effect2: gemData.gem_effects[val.key], code: code });
+      setActiveGem({ ...activeGem, effect2: gemData[activeGem.type == 'rune' ? 'rune_effects' : 'gem_effects'][val.key], code: code });
     }
   }
 
@@ -233,7 +233,7 @@ function GemsMenu(props) {
     if (val && val.key) {
       let code = activeGem.code.replaceBetween(32,40,val.key)
       setHold(true)
-      setActiveGem({ ...activeGem, effect3: gemData.gem_effects[val.key], code: code });
+      setActiveGem({ ...activeGem, effect3: gemData[activeGem.type == 'rune' ? 'rune_effects' : 'gem_effects'][val.key], code: code });
     }
   }
 
