@@ -30,12 +30,13 @@ function GemsMenu(props) {
   const [hold, setHold] = useState(true)
   const [activeGem, setActiveGem] = useState(false);
   const [sortedEffects, setSortedEffects] = useState([])
+  const [sortedRuneEffects, setSortedRuneEffects] = useState([])
   let gemElements = [];
 
   for (var i = 0; i < gems.length; i++) {
-    if (gems[i].type == "gem") {
+    // if (gems[i].type == "gem") {
       gemElements.push(<GemListItem key={i} gem={gems[i]} />);
-    }
+    // }
   }
 
   useEffect(() => {
@@ -57,13 +58,28 @@ function GemsMenu(props) {
   }
 
   function GemEditItem(props) {
+    let types = [];
+    for (const [key, value] of Object.entries(gemData.types)) {
+      types.push({
+        key: key,
+        value: value
+      });
+    }
+
     let shapes = [];
     for (const [key, value] of Object.entries(gemData.gem_shapes)) {
       shapes.push({
         key: key,
         value: value
-      }
-      );
+      });
+    }
+
+    let runeTypes = []
+    for (const [key, value] of Object.entries(gemData.rune_shapes)) {
+      runeTypes.push({
+        key: key,
+        value: value
+      });
     }
 
    const effectRegex = /\((\+|\-)([0-9.]*)[\%]?\)/g
@@ -92,34 +108,50 @@ function GemsMenu(props) {
       setSortedEffects(tempArray)
    }
 
+   if (!sortedRuneEffects.length) {
+      let tempArray = []
+      for (const [key, value] of Object.entries(gemData.rune_effects)) {
+        tempArray.push({key: key, value: value})
+      }
+      tempArray.sort(effectSort)
+      setSortedRuneEffects(tempArray)
+   }
+
     return (
       <div className="gems-active">
         {activeGem && (
           <div>
-            <p>{activeGem.type}</p>
+            {/*<p>{activeGem.type}</p>*/}
             <SearchableDropdown
-              options={shapes}
+              options={types}
+              label="value"
+              id="key"
+              selectedVal={activeGem.type}
+              handleChange={(val) => dropdownSelectType(val)}
+            />
+            <SearchableDropdown
+              options={activeGem.type == 'rune' ? runeTypes : shapes}
               label="value"
               id="key"
               selectedVal={activeGem.shape}
               handleChange={(val) => dropdownSelectShape(val)}
             />
             <SearchableDropdown
-              options={sortedEffects}
+              options={activeGem.type == 'rune' ? sortedRuneEffects : sortedEffects}
               label="value"
               id="key"
               selectedVal={activeGem.effect1}
               handleChange={(val) => dropdownSelectEffect1(val)}
             />
             <SearchableDropdown
-              options={sortedEffects}
+              options={activeGem.type == 'rune' ? sortedRuneEffects : sortedEffects}
               label="value"
               id="key"
               selectedVal={activeGem.effect2}
               handleChange={(val) => dropdownSelectEffect2(val)}
             />
             <SearchableDropdown
-              options={sortedEffects}
+              options={activeGem.type == 'rune' ? sortedRuneEffects : sortedEffects}
               label="value"
               id="key"
               selectedVal={activeGem.effect3}
@@ -149,6 +181,28 @@ function GemsMenu(props) {
         {props.value}
       </div>
     );
+  }
+
+  function dropdownSelectType(val) {
+    if (val && val.key) {
+      let code = activeGem.code.replaceBetween(0,40, gemData.defaults[val.value])
+      let type = gemData.defaults[val.value].substring(0, 8)
+      let shape = gemData.defaults[val.value].substring(8, 16)
+      let effect1 = gemData.defaults[val.value].substring(16, 24)
+      let effect2 = gemData.defaults[val.value].substring(24, 32)
+      let effect3 = gemData.defaults[val.value].substring(32, 40)
+
+      setHold(true)
+      setActiveGem({
+        ...activeGem,
+        type: gemData.types[type],
+        shape: gemData[gemData.types[type] == 'rune' ? 'rune_shapes' : 'gem_shapes'][shape],
+        effect1: gemData[gemData.types[type] == 'rune' ? 'rune_effects' : 'gem_effects'][effect1],
+        effect2: gemData[gemData.types[type] == 'rune' ? 'rune_effects' : 'gem_effects'][effect2],
+        effect3: gemData[gemData.types[type] == 'rune' ? 'rune_effects' : 'gem_effects'][effect3],
+        code: code
+      });
+    }
   }
 
   function dropdownSelectShape(val) {
@@ -188,7 +242,7 @@ function GemsMenu(props) {
   }
 
   return (
-    <div>
+    <div className="gems-wrapper">
       {gems.length > 0 && (
         <div className="gems">
           <GemEditItem gem={activeGem} />
@@ -252,6 +306,11 @@ function formatGemData(gem, index) {
     effect1 = gemData.gem_effects[gem.substring(16, 24)];
     effect2 = gemData.gem_effects[gem.substring(24, 32)];
     effect3 = gemData.gem_effects[gem.substring(32, 40)];
+  } else {
+    shape = gemData.rune_shapes[gem.substring(8, 16)]
+    effect1 = gemData.rune_effects[gem.substring(16, 24)];
+    effect2 = gemData.rune_effects[gem.substring(24, 32)];
+    effect3 = gemData.rune_effects[gem.substring(32, 40)];
   }
 
   return {
