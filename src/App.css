@@ -66,6 +66,7 @@ body > div {
   position: absolute;
   top: 100%;
   left: 0;
+  pointer-events: none;
 }
 
 .gems-list-item:hover {
@@ -73,6 +74,59 @@ body > div {
 }
 
 .gems-list-item.active {
+  color: rgb(179, 144, 80);
+}
+
+.items-wrapper {
+  flex-basis: 100%;
+}
+
+.items {
+  display: flex;
+  position: relative;
+  flex-basis: 100%;
+  height: 100%;
+}
+
+.items-active {
+  width: 50%;
+}
+
+.items-list {
+  width: 50%;
+  height: 100%;
+  overflow-y: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.items-list-item {
+  padding: 5px;
+  margin: 10px 10px 30px 10px;
+  background: url(https://1.bp.blogspot.com/-UXxxyClp_2s/X0g2ps2lHiI/AAAAAAAAghg/m9lzcE6xYu0mbUWjzt-1Vwvhcdyjh9nCACLcBGAsYHQ/s1711/bg_big-sheader12.jpg) no-repeat;
+  background-size: cover;
+  position: relative;
+  cursor: pointer;
+}
+
+.items-list-item::after {
+  content: '';
+  background: url(https://3.bp.blogspot.com/-c_f13GwabG8/VPYhtCIIZ0I/AAAAAAAAFhg/MORn_jUt8mc/s1600/footer_bottom_ornament.jpg) no-repeat;
+  background-size: contain;
+  width: 100%;
+  padding-bottom: 75%;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  pointer-events: none;
+}
+
+.items-list-item:hover {
+  color: white;
+}
+
+.items-list-item.active {
   color: rgb(179, 144, 80);
 }
 

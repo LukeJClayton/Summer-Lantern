@@ -247,7 +247,7 @@ function GemsMenu(props) {
         <div className="gems">
           <GemEditItem gem={activeGem} />
           <div className="gems-list">
-          {gemElements}
+            {gemElements}
           </div>
         </div>
       )}
