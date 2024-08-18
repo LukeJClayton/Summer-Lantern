@@ -1,6 +1,8 @@
 {
 	"start": "40f0ffff",
 
+  "default": "00000000000000d210004001000000",
+
 	"items": {
 		"64000040": "Hunter's Mark",
 		"6f000040": "Silencing Blank",

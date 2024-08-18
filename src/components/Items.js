@@ -6,6 +6,7 @@ import itemData from "../data/items.json";
 function ItemsMenu() {
 	const {save, setSave} = useContext(SaveContext);
 	const [items, setItems] = useState([])
+  const [emptySlots, setEmptySlots] = useState([])
 	const [activeItem, setActiveItem] = useState(false)
 	const [hold, setHold] = useState(false)
 	let itemElements = []
@@ -18,7 +19,9 @@ function ItemsMenu() {
 	useEffect(() => {
 		if (!loaded) {
 			loaded = true
-			setItems(processItems(save));
+      let processedSave = processItems(save)
+			setItems(processedSave.allItems);
+      setEmptySlots(processedSave.emptySlots);
 			if (!hold) {
 				setActiveItem(false)
 			} else {
@@ -48,9 +51,29 @@ function ItemsMenu() {
 		}
 	}
 
+  function dropdownSelectQuantity(val) {
+    if (val && val.key) {
+      let code = activeItem.code.replaceBetween(24, 26, val.key)
+      setHold(true)
+      setActiveItem({ ...activeItem, quantity: val.value, code: code });
+    }
+  }
+
 	for (var i = 0; i < items.length; i++) {
 		itemElements.push(<ItemListItem key={i} item={items[i]} />);
 	}
+
+  function addNewItem() {
+    let item = emptySlots.splice(0, 1)[0]
+    let index = parseInt(save.substring(item.index - 32, item.index - 30), 16) + 1
+    let code = item.code = index.toString(16) + itemData.default
+    let newItem = {...item, quantity: parseInt(code.substring(24, 26), 16), item: itemData.items[code.substring(16, 24)], code: code }
+    let temp = items
+    temp.push(newItem)
+    setItems(temp)
+    setHold(true)
+    selectItem(newItem)
+  }
 
 	function ItemListItem(props) {
 		return (
@@ -70,6 +93,20 @@ function ItemsMenu() {
 			});
 		}
 
+    let quantityOptions = []
+    let quantity = Array.from(Array(99).keys())
+    for (var i = 0; i < quantity.length; i++) {
+      quantityOptions.push({
+        key: toHex(quantity[i]),
+        value: quantity[i].toString()
+      })
+    }
+
+    function toHex(d) {
+      return  ("0"+(Number(d).toString(16))).slice(-2).toUpperCase()
+    }
+
+
 		return (
 			<div className="items-active">
 				{activeItem && (
@@ -81,8 +118,20 @@ function ItemsMenu() {
 						selectedVal={activeItem.item}
 						handleChange={(val) => dropdownSelectItem(val)}
 						/>
+            <SearchableDropdown
+            options={quantityOptions}
+            label="value"
+            id="key"
+            selectedVal={activeItem.quantity}
+            handleChange={(val) => dropdownSelectQuantity(val)}
+            />
 					</div>
 				)}
+        <div>
+          <button onClick={() => {addNewItem()}}>
+            Add New Item
+          </button>
+        </div>
 			</div>
 		)
 	}
@@ -119,6 +168,7 @@ function extractItems(save) {
 	let itemNumber = 1;
 	let itemStartID = parseInt('40', 16)
 	let allItems = []
+  let emptySlots = []
 
 	while (loop == true) {
 		let itemData = save.substring(
@@ -131,14 +181,24 @@ function extractItems(save) {
 				allItems.push(
 					item
 				);
-			}
+			} else if (itemData.substring(16, 24) == 'ffffffff') {
+        emptySlots.push(
+          item
+        );
+      }
 			itemNumber = itemNumber + 1;
+    } else if (itemData.substring(0, 8) == "00000000") {
+      let item = formatItemData(itemData, startIndex + itemSize * (itemNumber - 1))
+      emptySlots.push(
+        item
+      );
+      itemNumber = itemNumber + 1;
 		} else {
 			loop = false;
 		}
 	}
 
-	return allItems; 
+	return {allItems: allItems, emptySlots: emptySlots}; 
 }
 
 function formatItemData(item, index) {
