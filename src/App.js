@@ -7,6 +7,7 @@ import { FileContext, FileProvider } from "./context/File.js"
 import { SaveHandler } from './components/SaveHandler.js'
 import { GemsMenu } from './components/Gems.js'
 import { ItemsMenu } from './components/Items.js'
+import { WeaponsMenu } from './components/Weapons.js'
 
 import './App.css';
 
@@ -24,6 +25,9 @@ function Main(props) {
         <button onClick={() => {setActiveTab('items')}}>
           ITEMS
         </button>
+        <button onClick={() => {setActiveTab('weapons')}}>
+          WEAPONS
+        </button>
       </div>
     )
   }
@@ -40,6 +44,9 @@ function Main(props) {
       }
       {save && activeTab == 'items' &&
         <ItemsMenu />
+      }
+      {save && activeTab == 'weapons' &&
+        <WeaponsMenu />
       }
     </div>
   );

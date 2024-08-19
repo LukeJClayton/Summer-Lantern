@@ -7,23 +7,6 @@ String.prototype.replaceBetween = function(start, end, what) {
   return this.substring(0, start) + what + this.substring(end);
 };
 
-function DropDown(props) {
-  const [open, setOpen] = useState(false)
-
-  function handleToggle() {
-    setOpen(!open)
-  }
-
-  return (
-      <div className={"dropdown" + (!open ? " dropdown-collapsed": '')}>
-        <p className="dropdown-button" onClick={handleToggle}>{props.label}</p>
-        <div className="dropdown-content">
-          {props.content}
-        </div>
-      </div>
-    )
-}
-
 function GemsMenu(props) {
   const {save, setSave} = useContext(SaveContext);
   const [gems, setGems] = useState([]);
