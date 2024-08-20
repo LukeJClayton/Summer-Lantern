@@ -130,6 +130,112 @@ body > div {
   color: rgb(179, 144, 80);
 }
 
+.weapons-wrapper {
+  flex-basis: 100%;
+}
+
+.weapons {
+  display: flex;
+  position: relative;
+  flex-basis: 100%;
+  height: 100%;
+}
+
+.weapons-active {
+  width: 50%;
+}
+
+.weapons-list {
+  width: 50%;
+  height: 100%;
+  overflow-y: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.weapons-list-item {
+  padding: 5px;
+  margin: 10px 10px 30px 10px;
+  background: url(https://1.bp.blogspot.com/-UXxxyClp_2s/X0g2ps2lHiI/AAAAAAAAghg/m9lzcE6xYu0mbUWjzt-1Vwvhcdyjh9nCACLcBGAsYHQ/s1711/bg_big-sheader12.jpg) no-repeat;
+  background-size: cover;
+  position: relative;
+  cursor: pointer;
+}
+
+.weapons-list-item::after {
+  content: '';
+  background: url(https://3.bp.blogspot.com/-c_f13GwabG8/VPYhtCIIZ0I/AAAAAAAAFhg/MORn_jUt8mc/s1600/footer_bottom_ornament.jpg) no-repeat;
+  background-size: contain;
+  width: 100%;
+  padding-bottom: 75%;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  pointer-events: none;
+}
+
+.weapons-list-item:hover {
+  color: white;
+}
+
+.weapons-list-item.active {
+  color: rgb(179, 144, 80);
+}
+
+.armours-wrapper {
+  flex-basis: 100%;
+}
+
+.armours {
+  display: flex;
+  position: relative;
+  flex-basis: 100%;
+  height: 100%;
+}
+
+.armours-active {
+  width: 50%;
+}
+
+.armours-list {
+  width: 50%;
+  height: 100%;
+  overflow-y: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.armours-list-item {
+  padding: 5px;
+  margin: 10px 10px 30px 10px;
+  background: url(https://1.bp.blogspot.com/-UXxxyClp_2s/X0g2ps2lHiI/AAAAAAAAghg/m9lzcE6xYu0mbUWjzt-1Vwvhcdyjh9nCACLcBGAsYHQ/s1711/bg_big-sheader12.jpg) no-repeat;
+  background-size: cover;
+  position: relative;
+  cursor: pointer;
+}
+
+.armours-list-item::after {
+  content: '';
+  background: url(https://3.bp.blogspot.com/-c_f13GwabG8/VPYhtCIIZ0I/AAAAAAAAFhg/MORn_jUt8mc/s1600/footer_bottom_ornament.jpg) no-repeat;
+  background-size: contain;
+  width: 100%;
+  padding-bottom: 75%;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  pointer-events: none;
+}
+
+.armours-list-item:hover {
+  color: white;
+}
+
+.armours-list-item.active {
+  color: rgb(179, 144, 80);
+}
+
 /*.dropdown .dropdown-button {
   color: rgb(179, 144, 80);
 }

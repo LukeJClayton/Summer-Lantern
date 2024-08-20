@@ -66,8 +66,6 @@ function GemsMenu(props) {
       });
     }
 
-   const effectRegex = /\((\+|\-)([0-9.]*)[\%]?\)/g
-
    function effectSort(a, b) {
     var parts = {
       a: a.value.split('('),

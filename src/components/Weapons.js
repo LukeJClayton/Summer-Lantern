@@ -7,6 +7,7 @@ function WeaponsMenu() {
 	const {save, setSave} = useContext(SaveContext);
 	const [weapons, setWeapons] = useState([])
 	const [activeWeapon, setActiveWeapon] = useState(false)
+  const [sortedWeapons, setSortedWeapons] = useState([])
 	const [hold, setHold] = useState(false)
 	let weaponElements = []
 
@@ -19,7 +20,6 @@ function WeaponsMenu() {
 		if (!loaded) {
 			loaded = true
       let processedSave = processWeapons(save)
-      console.log(processedSave)
 			setWeapons(processedSave.allWeapons);
 			if (!hold) {
 				setActiveWeapon(false)
@@ -34,8 +34,11 @@ function WeaponsMenu() {
 	}, [activeWeapon]);
 
 	function updateWeapon() {
-		let temp = save.replaceBetween(activeWeapon.index, activeWeapon.index + 32, activeWeapon.code)
-		setSave(temp)
+    if (activeWeapon) {
+  		let temp = save.replaceBetween(activeWeapon.index, activeWeapon.index + 32, activeWeapon.code)
+      let temp2 = temp.replaceBetween(activeWeapon.originalIndex, activeWeapon.originalIndex + 8, activeWeapon.code.substring(16, 24))
+  		setSave(temp2)
+    }
 	}
 
 	function selectWeapon(weapon) {
@@ -63,20 +66,37 @@ function WeaponsMenu() {
 	}
 
 	function WeaponEditItem(props) {
-		let weaponOptions = []
-		for (const [key, value] of Object.entries(weaponData.weapons)) {
-			weaponOptions.push({
-				key: key,
-				value: value
-			});
-		}
+
+   function weaponSort(a, b) {
+    var parts = {
+      a: a.value.split('+'),
+      b: b.value.split('+'),
+    }
+
+    if (parts.a[0] == parts.b[0] && parts.a[1] && parts.b[1]) {
+      let vala = parts.a[1]
+      let valb = parts.b[1]
+      return parseFloat(vala) - parseFloat(valb)
+    } else {
+      return parts.a[0] > parts.b[0] ? 1: -1
+    }
+   }
+
+   if (!sortedWeapons.length && activeWeapon) {
+      let tempArray = []
+      for (const [key, value] of Object.entries(weaponData.weapons)) {
+        tempArray.push({key: key, value: value})
+      }
+      tempArray.sort(weaponSort)
+      setSortedWeapons(tempArray)
+   }
 
 		return (
 			<div className="weapons-active">
 				{activeWeapon && (
 					<div>
 						<SearchableDropdown
-						options={weaponOptions}
+						options={sortedWeapons}
 						label="value"
 						id="key"
 						selectedVal={activeWeapon.weapon}
@@ -87,7 +107,7 @@ function WeaponsMenu() {
 			</div>
 		)
 	}
-	console.log(weapons)
+
 	return (
 		<div className="weapons-wrapper">
 		{weapons.length > 0 && (
@@ -128,7 +148,7 @@ function extractWeapons(save) {
 			startIndex + weaponSize * weaponNumber
 		);
 		if (parseInt(weaponData.substring(0, 2), 16) == (weaponStartID - 1) + weaponNumber) {
-			let weapon = formatWeaponData(weaponData, startIndex + weaponSize * (weaponNumber - 1))
+			let weapon = formatWeaponData(weaponData, startIndex + weaponSize * (weaponNumber - 1), save)
 			if (weapon.weapon) {
 				allWeapons.push(
 					weapon
@@ -140,7 +160,7 @@ function extractWeapons(save) {
       }
 			weaponNumber = weaponNumber + 1;
     } else if (weaponData.substring(0, 8) == "00000000") {
-      let weapon = formatWeaponData(weaponData, startIndex + weaponSize * (weaponNumber - 1))
+      let weapon = formatWeaponData(weaponData, startIndex + weaponSize * (weaponNumber - 1), save)
       emptySlots.push(
         weapon
       );
@@ -153,15 +173,16 @@ function extractWeapons(save) {
 	return {allWeapons: allWeapons}; 
 }
 
-function formatWeaponData(weapon, index) {
-	console.log(weapon)
-	console.log(weapon.substring(16, 24))
+function formatWeaponData(weapon, index, save) {
   let weaponName = weaponData.weapons[weapon.substring(16, 24)];
+  let test = save.substring(0, index - 32)
+  let originalIndex = test.indexOf(weapon.substring(16, 24))
 
   return {
     weapon: weaponName,
     code: weapon,
-    index: index
+    index: index,
+    originalIndex: originalIndex
   };
 }
 

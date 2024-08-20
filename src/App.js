@@ -8,6 +8,7 @@ import { SaveHandler } from './components/SaveHandler.js'
 import { GemsMenu } from './components/Gems.js'
 import { ItemsMenu } from './components/Items.js'
 import { WeaponsMenu } from './components/Weapons.js'
+import { ArmoursMenu } from './components/Armours.js'
 
 import './App.css';
 
@@ -28,6 +29,9 @@ function Main(props) {
         <button onClick={() => {setActiveTab('weapons')}}>
           WEAPONS
         </button>
+        <button onClick={() => {setActiveTab('armours')}}>
+          ARMOUR
+        </button>
       </div>
     )
   }
@@ -47,6 +51,9 @@ function Main(props) {
       }
       {save && activeTab == 'weapons' &&
         <WeaponsMenu />
+      }
+      {save && activeTab == 'armours' &&
+        <ArmoursMenu />
       }
     </div>
   );
