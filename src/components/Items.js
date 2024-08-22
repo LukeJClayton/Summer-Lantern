@@ -16,7 +16,7 @@ function ItemsMenu() {
 	}, [save]);
 
 	let loaded = false;
-	useEffect(() => {
+	useEffect(() => {  
 		if (!loaded) {
 			loaded = true
       let processedSave = processItems(save)
@@ -35,8 +35,10 @@ function ItemsMenu() {
 	}, [activeItem]);
 
 	function updateItem() {
-		let temp = save.replaceBetween(activeItem.index, activeItem.index + 32, activeItem.code)
-		setSave(temp)
+    if (activeItem) {
+  		let temp = save.replaceBetween(activeItem.index, activeItem.index + 32, activeItem.code)
+  		setSave(temp)
+    }
 	}
 
 	function selectItem(item) {
@@ -45,7 +47,7 @@ function ItemsMenu() {
 
 	function dropdownSelectItem(val) {
 		if (val && val.key) {
-			let code = activeItem.code.replaceBetween(16, 24,val.key)
+			let code = activeItem.code.replaceBetween(8, 24,val.key)
 			setHold(true)
 			setActiveItem({ ...activeItem, item: itemData.items[val.key], code: code });
 		}
@@ -67,7 +69,7 @@ function ItemsMenu() {
     let item = emptySlots.splice(0, 1)[0]
     let index = parseInt(save.substring(item.index - 32, item.index - 30), 16) + 1
     let code = item.code = index.toString(16) + itemData.default
-    let newItem = {...item, quantity: parseInt(code.substring(24, 26), 16), item: itemData.items[code.substring(16, 24)], code: code }
+    let newItem = {...item, quantity: parseInt(code.substring(24, 26), 16), item: itemData.items[code.substring(8, 24)], code: code }
     let temp = items
     temp.push(newItem)
     setItems(temp)
@@ -202,7 +204,7 @@ function extractItems(save) {
 }
 
 function formatItemData(item, index) {
-  let itemName = itemData.items[item.substring(16, 24)];
+  let itemName = itemData.items[item.substring(8, 24)];
   let quantity = parseInt(item.substring(24, 26), 16)
 
   return {

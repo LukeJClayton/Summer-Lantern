@@ -10,7 +10,7 @@ String.prototype.replaceBetween = function(start, end, what) {
 function GemsMenu(props) {
   const {save, setSave} = useContext(SaveContext);
   const [gems, setGems] = useState([]);
-  const [hold, setHold] = useState(true)
+  const [hold, setHold] = useState(false)
   const [activeGem, setActiveGem] = useState(false);
   const [sortedEffects, setSortedEffects] = useState([])
   const [sortedRuneEffects, setSortedRuneEffects] = useState([])
@@ -37,8 +37,10 @@ function GemsMenu(props) {
   }, [activeGem]);
 
   function updateGem() {
-    let temp = save.replaceBetween(activeGem.index, activeGem.index + 80, activeGem.code)
-    setSave(temp)
+    if (activeGem) {
+      let temp = save.replaceBetween(activeGem.index, activeGem.index + 80, activeGem.code)
+      setSave(temp)
+    }
   }
 
   function GemEditItem(props) {
