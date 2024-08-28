@@ -149,6 +149,7 @@ function GemsMenu(props) {
   function GemListItem(props) {
     return (
       <div className={"gems-list-item" + (props.gem.index == activeGem.index ? ' active' : '')} onClick={() => {selectGem(props.gem)}}>
+        <p>{props.gem.id}</p>
         <p>{props.gem.type}</p>
         <p>{props.gem.shape}</p>
         <p>{props.gem.effect1}</p>
@@ -168,12 +169,12 @@ function GemsMenu(props) {
 
   function dropdownSelectType(val) {
     if (val && val.key) {
-      let code = activeGem.code.replaceBetween(0,40, gemData.defaults[val.value])
-      let type = gemData.defaults[val.value].substring(0, 8)
-      let shape = gemData.defaults[val.value].substring(8, 16)
-      let effect1 = gemData.defaults[val.value].substring(16, 24)
-      let effect2 = gemData.defaults[val.value].substring(24, 32)
-      let effect3 = gemData.defaults[val.value].substring(32, 40)
+      let code = activeGem.code.replaceBetween(0,56, gemData.defaults[val.value])
+      let type = gemData.defaults[val.value].substring(16, 24)
+      let shape = gemData.defaults[val.value].substring(24, 32)
+      let effect1 = gemData.defaults[val.value].substring(32, 40)
+      let effect2 = gemData.defaults[val.value].substring(40, 48)
+      let effect3 = gemData.defaults[val.value].substring(48, 56)
 
       setHold(true)
       setActiveGem({
@@ -190,7 +191,7 @@ function GemsMenu(props) {
 
   function dropdownSelectShape(val) {
     if (val && val.key) {
-      let code = activeGem.code.replaceBetween(8,16,val.key)
+      let code = activeGem.code.replaceBetween(24,32,val.key)
       setHold(true)
       setActiveGem({ ...activeGem, shape: gemData[activeGem.type == 'rune' ? 'rune_shapes' : 'gem_shapes'][val.key], code: code });
     }
@@ -198,7 +199,7 @@ function GemsMenu(props) {
 
   function dropdownSelectEffect1(val) {
     if (val && val.key) {
-      let code = activeGem.code.replaceBetween(16,24,val.key)
+      let code = activeGem.code.replaceBetween(32,40,val.key)
       setHold(true)
       setActiveGem({ ...activeGem, effect1: gemData[activeGem.type == 'rune' ? 'rune_effects' : 'gem_effects'][val.key], code: code });
     }
@@ -206,7 +207,7 @@ function GemsMenu(props) {
 
   function dropdownSelectEffect2(val) {
     if (val && val.key) {
-      let code = activeGem.code.replaceBetween(24,32,val.key)
+      let code = activeGem.code.replaceBetween(40,48,val.key)
       setHold(true)
       setActiveGem({ ...activeGem, effect2: gemData[activeGem.type == 'rune' ? 'rune_effects' : 'gem_effects'][val.key], code: code });
     }
@@ -214,7 +215,7 @@ function GemsMenu(props) {
 
   function dropdownSelectEffect3(val) {
     if (val && val.key) {
-      let code = activeGem.code.replaceBetween(32,40,val.key)
+      let code = activeGem.code.replaceBetween(48,56,val.key)
       setHold(true)
       setActiveGem({ ...activeGem, effect3: gemData[activeGem.type == 'rune' ? 'rune_effects' : 'gem_effects'][val.key], code: code });
     }
@@ -246,7 +247,7 @@ function processGems(save) {
   }
 }
 
-function extractGems(save) {
+export function extractGems(save) {
   let allGems = [];
   let possibilities = gemData.gem_possibilities;
   let loop = true;
@@ -264,12 +265,12 @@ function extractGems(save) {
   let gemNumber = 1;
   while (loop == true) {
     let gemItemData = save.substring(
-      gemStartIndex + gemSize * (gemNumber - 1),
-      gemStartIndex + gemSize * gemNumber
+      gemStartIndex - 16 + gemSize * (gemNumber - 1),
+      gemStartIndex - 16 + gemSize * gemNumber
     );
     if (gemItemData.match(regex)) {
       allGems.push(
-        formatGemData(gemItemData, gemStartIndex + gemSize * (gemNumber - 1))
+        formatGemData(gemItemData, gemStartIndex - 16 + gemSize * (gemNumber - 1))
       );
       gemNumber = gemNumber + 1;
     } else {
@@ -280,23 +281,26 @@ function extractGems(save) {
   return allGems; 
 }
 
-function formatGemData(gem, index) {
-  let type = gemData.types[gem.substring(0, 8)];
+export function formatGemData(gem, index) {
+  let type = gemData.types[gem.substring(16, 24)];
 
-  let shape, effect1, effect2, effect3;
+  let shape, effect1, effect2, effect3, id;
   if (type == "gem") {
-    shape = gemData.gem_shapes[gem.substring(8, 16)];
-    effect1 = gemData.gem_effects[gem.substring(16, 24)];
-    effect2 = gemData.gem_effects[gem.substring(24, 32)];
-    effect3 = gemData.gem_effects[gem.substring(32, 40)];
+    id = gem.substring(0, 8)
+    shape = gemData.gem_shapes[gem.substring(24, 32)];
+    effect1 = gemData.gem_effects[gem.substring(32, 40)];
+    effect2 = gemData.gem_effects[gem.substring(40, 48)];
+    effect3 = gemData.gem_effects[gem.substring(48, 56)];
   } else {
-    shape = gemData.rune_shapes[gem.substring(8, 16)]
-    effect1 = gemData.rune_effects[gem.substring(16, 24)];
-    effect2 = gemData.rune_effects[gem.substring(24, 32)];
-    effect3 = gemData.rune_effects[gem.substring(32, 40)];
+    id = gem.substring(0, 8)
+    shape = gemData.rune_shapes[gem.substring(24, 32)]
+    effect1 = gemData.rune_effects[gem.substring(32, 40)];
+    effect2 = gemData.rune_effects[gem.substring(40, 48)];
+    effect3 = gemData.rune_effects[gem.substring(48, 56)];
   }
 
   return {
+    id: id,
     type: type,
     shape: shape,
     effect1: effect1,

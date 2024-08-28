@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { SaveContext } from "../context/Save.js";
 import { SearchableDropdown } from "./SearchableDropdown.js";
+import { extractGems } from "./Gems.js";
 import armourData from "../data/armours.json";
 
 function ArmoursMenu() {
@@ -9,6 +10,7 @@ function ArmoursMenu() {
   const [activeArmour, setActiveArmour] = useState(false)
   const [sortedArmours, setSortedArmours] = useState([])
   const [hold, setHold] = useState(false)
+  const [gems, setGems] = useState([])
   let armourElements = []
 
   useEffect(() => {
@@ -20,6 +22,7 @@ function ArmoursMenu() {
     if (!loaded) {
       loaded = true
       let processedSave = processArmours(save)
+      setGems(extractGems(save))
       setArmours(processedSave.allArmours);
       if (!hold) {
         setActiveArmour(false)
@@ -36,12 +39,43 @@ function ArmoursMenu() {
   function updateArmour() {
     if (activeArmour) {
       let temp = save.replaceBetween(activeArmour.index, activeArmour.index + 32, activeArmour.code)
-      let temp2 = temp.replaceBetween(activeArmour.originalIndex, activeArmour.originalIndex + 8, activeArmour.code.substring(16, 24))
-      setSave(temp2)
+      temp = temp.replaceBetween(activeArmour.originalIndex, activeArmour.originalIndex + 8, activeArmour.code.substring(16, 24))
+      console.log(activeArmour)
+      if (activeArmour.gem1 && activeArmour.gem1 !== "No Gem") {
+        temp = temp.replaceBetween(activeArmour.originalIndex + 32 + (16*0), activeArmour.originalIndex + 48 + (16*0), '01000000' + activeArmour.gem1)
+      } else if (activeArmour.gem1 == "No Gem") {
+        temp = temp.replaceBetween(activeArmour.originalIndex + 32 + (16*0), activeArmour.originalIndex + 48 + (16*0), '0000008000000000')
+      }
+
+      if (activeArmour.gem2 && activeArmour.gem2 !== "No Gem") {
+        temp = temp.replaceBetween(activeArmour.originalIndex + 32 + (16*1), activeArmour.originalIndex + 48 + (16*1), '01000000' + activeArmour.gem2)
+      } else if (activeArmour.gem2 == "No Gem") {
+        temp = temp.replaceBetween(activeArmour.originalIndex + 32 + (16*1), activeArmour.originalIndex + 48 + (16*1), '0000008000000000')
+      }
+
+      if (activeArmour.gem3 && activeArmour.gem3 !== "No Gem") {
+        temp = temp.replaceBetween(activeArmour.originalIndex + 32 + (16*2), activeArmour.originalIndex + 48 + (16*2), '01000000' + activeArmour.gem3)
+      } else if (activeArmour.gem3 == "No Gem") {
+        temp = temp.replaceBetween(activeArmour.originalIndex + 32 + (16*2), activeArmour.originalIndex + 48 + (16*2), '0000008000000000')
+      }
+
+      if (activeArmour.gem4 && activeArmour.gem4 !== "No Gem") {
+        temp = temp.replaceBetween(activeArmour.originalIndex + 32 + (16*3), activeArmour.originalIndex + 48 + (16*3), '01000000' + activeArmour.gem4)
+      } else if (activeArmour.gem4 == "No Gem") {
+        temp = temp.replaceBetween(activeArmour.originalIndex + 32 + (16*3), activeArmour.originalIndex + 48 + (16*3), '0000008000000000')
+      }
+
+      if (activeArmour.gem5 && activeArmour.gem5 !== "No Gem") {
+        temp = temp.replaceBetween(activeArmour.originalIndex + 32 + (16*4), activeArmour.originalIndex + 48 + (16*4), '01000000' + activeArmour.gem5)
+      } else if (activeArmour.gem5 == "No Gem") {
+        temp = temp.replaceBetween(activeArmour.originalIndex + 32 + (16*4), activeArmour.originalIndex + 48 + (16*4), '0000008000000000')
+      }
+      setSave(temp)
     }
   }
 
   function selectArmour(armour) {
+    console.log(armour)
     setActiveArmour(armour)
   }
 
@@ -53,6 +87,42 @@ function ArmoursMenu() {
     }
   }
 
+  function dropdownSelectGem1(val) {
+    if (val && val.key) {
+      setHold(true)
+      setActiveArmour({ ...activeArmour, gem1: val.key, code: activeArmour.code });
+    }
+  }
+
+  function dropdownSelectGem2(val) {
+    if (val && val.key) {
+      setHold(true)
+      setActiveArmour({ ...activeArmour, gem2: val.key, code: activeArmour.code });
+    }
+  }
+
+  function dropdownSelectGem3(val) {
+    if (val && val.key) {
+      setHold(true)
+      setActiveArmour({ ...activeArmour, gem3: val.key, code: activeArmour.code });
+    }
+  }
+
+  function dropdownSelectGem4(val) {
+    if (val && val.key) {
+      setHold(true)
+      setActiveArmour({ ...activeArmour, gem4: val.key, code: activeArmour.code });
+    }
+  }
+
+  function dropdownSelectGem5(val) {
+    if (val && val.key) {
+      setHold(true)
+      setActiveArmour({ ...activeArmour, gem5: val.key, code: activeArmour.code });
+    }
+  }
+
+
   for (var i = 0; i < armours.length; i++) {
     armourElements.push(<ArmourListItem key={i} armour={armours[i]} />);
   }
@@ -61,9 +131,19 @@ function ArmoursMenu() {
     return (
       <div className={"armours-list-item" + (props.armour.index == activeArmour.index ? ' active' : '')} onClick={() => {selectArmour(props.armour)}}>
       <p>Armour: {props.armour.armour}</p>
+      <p>Gem 1: {props.armour.gem1}</p>
+      <p>Gem 2: {props.armour.gem2}</p>
+      <p>Gem 3: {props.armour.gem3}</p>
+      <p>Gem 4: {props.armour.gem4}</p>
+      <p>Gem 5: {props.armour.gem5}</p>
       </div>
     );
   }
+
+  let gemsOptions = gems.map((item) => {
+    return {key:item.id, value:item.id}
+  })
+  gemsOptions.push({key:'No Gem', value:'No Gem'})
 
   function ArmourEditItem(props) {
 
@@ -101,6 +181,41 @@ function ArmoursMenu() {
             id="key"
             selectedVal={activeArmour.armour}
             handleChange={(val) => dropdownSelectArmour(val)}
+            />
+            <SearchableDropdown
+            options={gemsOptions}
+            label="value"
+            id="key"
+            selectedVal={activeArmour.gem1}
+            handleChange={(val) => dropdownSelectGem1(val)}
+            />
+            <SearchableDropdown
+            options={gemsOptions}
+            label="value"
+            id="key"
+            selectedVal={activeArmour.gem2}
+            handleChange={(val) => dropdownSelectGem2(val)}
+            />
+            <SearchableDropdown
+            options={gemsOptions}
+            label="value"
+            id="key"
+            selectedVal={activeArmour.gem3}
+            handleChange={(val) => dropdownSelectGem3(val)}
+            />
+            <SearchableDropdown
+            options={gemsOptions}
+            label="value"
+            id="key"
+            selectedVal={activeArmour.gem4}
+            handleChange={(val) => dropdownSelectGem4(val)}
+            />
+            <SearchableDropdown
+            options={gemsOptions}
+            label="value"
+            id="key"
+            selectedVal={activeArmour.gem5}
+            handleChange={(val) => dropdownSelectGem5(val)}
             />
           </div>
         )}
@@ -178,8 +293,19 @@ function formatArmourData(armour, index, save) {
   let test = save.substring(0, index - 32)
   let originalIndex = test.indexOf(armour.substring(16, 24))
 
+  let gem1 = save.substring(originalIndex + 40 + (16*0), originalIndex + 48 + (16*0))
+  let gem2 = save.substring(originalIndex + 40 + (16*1), originalIndex + 48 + (16*1))
+  let gem3 = save.substring(originalIndex + 40 + (16*2), originalIndex + 48 + (16*2))
+  let gem4 = save.substring(originalIndex + 40 + (16*3), originalIndex + 48 + (16*3))
+  let gem5 = save.substring(originalIndex + 40 + (16*4), originalIndex + 48 + (16*4))
+
   return {
     armour: armourName,
+    gem1: gem1 === '00000000' ? 'No Gem' : gem1,
+    gem2: gem2 === '00000000' ? 'No Gem' : gem2,
+    gem3: gem3 === '00000000' ? 'No Gem' : gem3,
+    gem4: gem4 === '00000000' ? 'No Gem' : gem4,
+    gem5: gem5 === '00000000' ? 'No Gem' : gem5,
     code: armour,
     index: index,
     originalIndex: originalIndex
